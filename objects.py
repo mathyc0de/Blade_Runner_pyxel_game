@@ -1,6 +1,10 @@
 import pyxel as px
 from sounds import Sons, Music
 from abc import ABC, abstractclassmethod
+
+
+
+
 objectspos = []
 timer = [[0, 0]]
 bulletpos = [[0, 0, 0, 0, False, False]]
@@ -16,6 +20,8 @@ score = 0
 lastscore = 0
 EndGame = False
 GameRestart = False
+
+
 def Multiplier():
     global counter, multiplier, MapStart
     if MapStart:
@@ -24,10 +30,15 @@ def Multiplier():
             multiplier += 0.1
             counter = 0
 
+
+
+
 def choice(*elements):
     num = len(elements) - 1
     option = px.rndi(0, num)
     return elements[option]
+
+
 
 def bestplay():
     global scoremax
@@ -43,6 +54,8 @@ def bestplay():
             f2.close()
         scoremax = lastscore
     
+
+
 
 
 class Player:
@@ -72,7 +85,6 @@ class Player:
         self.dmg = False
         self.dx = 0
         self.cooldown = 0
-        self.cameray = 0
         self.camerax = 0
         self.lifebar = LifeBar(lives)
         self.u = 5
@@ -85,6 +97,11 @@ class Player:
         self.score = 0
         self.kills = 0
         
+
+
+
+
+
 
     def restart(self):
         global GameRestart, objectspos, timer, bulletpos, multiplier, counter, bulletind, enemy1, enemy2, enemy3, enemy4, enemy5, score, lastscore, EndGame
@@ -107,6 +124,11 @@ class Player:
             self.__init__(129, 188, 6)
             self.Map = Map()
 
+
+
+
+
+
     def DetectCollisions(self):
         global enemy1, enemy2, enemy3, enemy4, enemy5
         self.x1 = self.x + self.w
@@ -128,7 +150,6 @@ class Player:
                 self.col_yd = False
 
             if (self.x1 + 10 > objectspos[num][0] and self.x - 5 < objectspos[num][1]) and (self.y1 == objectspos[num][3]) and objectspos[num][4] == True:
-                print(enemy1, enemy2, enemy3)
                 if objectspos[num][6] == 0:
                     enemy1 = True
                 elif objectspos[num][6] == 1:
@@ -157,38 +178,50 @@ class Player:
                 self.col_xr = True
                 self.dmg = True
 
+
+
+
+
+
+
+
     def hitbox(self):
             global enemy1, enemy2, enemy3, enemy4, enemy5
             if enemy1 and self.attack:
                     self.Map.skel.pop(-300, 400)
                     self.kills += 1
                     self.killcount()
-                    print('poped0')
             if enemy2 and self.attack:
                     self.Map.skel1.pop(-300, 400)
                     self.kills += 1
-                    self.killcount()
-                    print('poped1')
             if enemy3 and self.attack:
                     self.Map.skel2.pop(-300, 400)
                     self.kills += 1
                     self.killcount()
-                    print('poped2')
             if enemy4 and self.attack:
                     self.Map.skel3.pop(-300, 400)
                     self.kills += 1
                     self.killcount()
-                    print('poped2')
             if enemy5 and self.attack:
                 self.Map.skel4.pop(-450, 400)
                 self.kills += 1
                 self.killcount()
                  
+
+
+
+
     def killcount(self):
         if self.kills % 10 == 0:
             if self.lifebar.vidas < 8:
                 self.lifebar.vidas += 1
                 self.lifebar.vidalos -= 1
+
+
+
+
+
+
 
     def Score(self):
         global score
@@ -200,10 +233,15 @@ class Player:
             
     def knockback(self) -> None:
         if self.dx > 0:
-                 self.x -= 4
+                 if self.x - 1 > self.camerax:
+                    self.x -= 4
                  self.dx -= 2
         if self.cooldown > 0:
             self.cooldown -= 1
+
+
+
+
                 
                 
     def damage(self) -> None:
@@ -217,13 +255,17 @@ class Player:
         elif self.dmg and self.cooldown > 0:
             self.dmg = False
             
+
+
+
+
             
     def move(self) -> None:
         global MapStart, EndGame
         self.StartCheck()
         if px.btnp(px.KEY_F) and not EndGame:
             MapStart = True
-        if px.btn(px.KEY_D) and MapStart:
+        if px.btn(px.KEY_D) and MapStart and self.x1  < self.camerax + 320:
             self.direction = 'right'
             self.idle = False
             
@@ -239,9 +281,10 @@ class Player:
                     self.col_yd = False
                     self.dy = 0
 
-        # if MapStart:
-        #      self.x += 2
-        if px.btn(px.KEY_A) and MapStart:
+        if MapStart:
+            if self.x - 1 < self.camerax:
+                self.x += 2
+        if px.btn(px.KEY_A) and MapStart and self.x - 1 > self.camerax:
             self.x -= 3
             self.direction = 'left'
             
@@ -257,12 +300,23 @@ class Player:
                 self.attack = True
                 self.counter1 = 36
 
+
+
+
+
+
+
     def StartCheck(self):
         global MapStart
         if MapStart:
             self.camerax += 2
             self.lifebar.camerax = self.camerax
             px.cls(5)
+
+
+
+
+
 
         
     def jump(self):
@@ -275,6 +329,11 @@ class Player:
                     self.y += 4
                 else:
                     self.air = False
+
+
+
+
+
 
     def time(self):
         if self.counter == 15:
@@ -325,8 +384,11 @@ class Player:
         self.counter1 += 2
 
 
+
+
+
+
     def draw(self) -> None:
-        
         if self.direction == 'right':
                 if self.attack:
                     px.blt(self.x, self.y - 10, 0, self.u2, 128, self.w + self.add, self.h2, 5)
@@ -341,6 +403,12 @@ class Player:
                     px.blt(self.x, self.y, 0, self.u, 0, -1 * self.w,self.h,5)
                 else:
                     px.blt(self.x, self.y, 0, self.u1, 35, -1 * self.w, self.h, 5)
+
+
+
+
+
+
 
 
 class Enemies (ABC):
@@ -372,6 +440,12 @@ class Enemies (ABC):
         timer[num][0] = a
         timer[num][1] = u
         return u
+    
+
+
+
+
+
 
 class Skeleton(Enemies):
     def __init__(self, x, y, index):
@@ -401,13 +475,20 @@ class Skeleton(Enemies):
         self.bultime = 0
         self.index = index
         
-    # def timer(self):
-    #     return super().timer(0, 51, 102, 153, 204)
-    
+
+
+
+
+
     def draw(self):
         u = super().timer(self.skeltimeindex, 0, 51, 102, 153, 204)
         px.blt(self.x, self.y, 2, u, self.v, -1 * self.w, self.h, 0)
         self.bulletsDraw()
+
+
+
+
+
 
     def bulletsDraw(self):
         u = super().timer(self.bullettimeindex , 0, 26, 52, 78, 105)
@@ -420,10 +501,18 @@ class Skeleton(Enemies):
         else:
             self.bultime = 0
 
+
+
+
+
     def pop(self, x, y):
         objectspos.remove([self.x, self.x1, self.y, self.y1, True, False, self.index])
         self.count = 0
         self.__init__(x, y, self.index)
+
+
+
+
 
 
 
@@ -435,12 +524,21 @@ class LifeBar:
         self.die = False
         self.colort = 0
 
+
+
+
+
     def randcolor(self):
         self.colort += 0.25
         if self.colort == 16:
             self.colort = 0
         color = px.floor(self.colort)
         return color
+
+
+
+
+
 
     def draw(self):
         global MapStart, score, lastscore, EndGame, GameRestart
@@ -462,11 +560,11 @@ class LifeBar:
             for numero in range(self.vidas):
                 px.blt(12*(numero+1) + self.camerax, 3, 0, 125, 5, 12, 10, 5)
 
-    # def dead(self):
-    #     if self.die:
-    #         px.cls(3)
-    #         px.rectb(100, 116, 120, 48, 4)
-    #         px.text(127, 136, "Você morreu, aperte F para reiniciar.", 8)
+
+
+
+
+
 
 class Map:
     def __init__(self) -> None:
@@ -491,6 +589,10 @@ class Map:
         self.skel4 = Skeleton(-400 , 22, 4)
         self.enemyconst = 0
     
+
+
+
+
     def enemyrate(self):
         if multiplier <= 48:
             self.enemyconst = px.ceil(multiplier * 10)
@@ -498,12 +600,21 @@ class Map:
             self.enemyconst = 480
 
     
+
+
+
+
     def flame(self):
         self.stage = self.time/2 
         if self.time == 120:
             self.time = 0
         px.blt(160, 176, 0, 158 + self.stage, 0, 11, 20, 5)
         self.time += 1
+
+
+
+
+
 
 
     def gamebackground(self, camerax):
@@ -516,6 +627,11 @@ class Map:
             if self.timer == 240:
                 self.timer = 0
                 
+
+
+
+
+
     def pressStart(self):
         global MapStart
         self.colort += 0.25
@@ -526,6 +642,10 @@ class Map:
             px.rectb(100, 116, 120, 48, color)
             px.text(127, 136, "Press F to start", color)
 
+
+
+
+
             
     def drawStart(self, cam_x):
         if MapStart:
@@ -533,6 +653,11 @@ class Map:
             self.platform1.draw(cam_x)
             self.platform2.draw(cam_x)
             
+
+
+
+
+
 
     def spawnEnemies(self, cam_x):            
         if  cam_x - 50 > self.randn:
@@ -566,6 +691,11 @@ class Map:
 
         
 
+
+
+
+
+
 class Platform:
     def __init__(self, y: int, type: str, Damage: bool=False, Fisica: bool=True) -> None:
         objectspos.append([0, 0, y, y + 14, Damage, Fisica])
@@ -585,6 +715,12 @@ class Platform:
             self.h = 7
             self.draw_const = 80
             self.range = 10
+
+
+
+
+
+
 
     def draw(self, camerax) -> None:
         if self.timer == 0:

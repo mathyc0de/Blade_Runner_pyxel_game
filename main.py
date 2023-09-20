@@ -22,7 +22,7 @@ class APP:
         self.player.time()
         Multiplier()
         self.player.DetectCollisions()
-        px.camera(self.player.camerax, self.player.cameray)
+        px.camera(self.player.camerax, 0)
         self.player.hitbox()
         px.cls(6)
         
@@ -39,9 +39,6 @@ class APP:
         self.Map.spawnEnemies(self.player.camerax)
         px.text(13 + self.player.camerax, 20, f'Score: {self.player.score}', 6)
         self.player.lifebar.draw()
-        # px.text(2 + self.player.camerax, 15, f'Y: {self.player.y}  Y1: {self.player.y + self.player.h}', 5)
-        # px.text(2 + self.player.camerax, 25, f'FPS ELAPSED: {px.frame_count}', 3)
-    
             
         
 
