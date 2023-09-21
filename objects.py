@@ -1,7 +1,7 @@
 import pyxel as px
 from sounds import Sons, Music
 from abc import ABC, abstractclassmethod
-
+import os
 
 
 
@@ -42,21 +42,28 @@ def choice(*elements):
 
 def bestplay():
     global scoremax
-    with open("bestplay.txt", 'r') as f:
+    dir = os.path.expanduser('~\\AppData\\Local\\Blade_Runner\\')
+    path = dir+"bestplay.txt"
+    IsExist = os.path.exists(dir)
+    if not IsExist:
+        os.makedirs(dir)
+    try:
+        with open(path, 'r') as f:
             scoremax = f.read()
             f.close()
-
+    except:
+        with open(path, "x") as f:
+            f.write("0")
+            scoremax = 0
+            f.close()
     if lastscore > int(scoremax):
-        with open("bestplay.txt", "w") as f1:
+        with open(path, "w") as f1:
             f1.close()
-        with open("bestplay.txt", "w") as f2:
+        with open(path, "w") as f2:
             f2.write(str(lastscore))
             f2.close()
         scoremax = lastscore
     
-
-
-
 
 class Player:
     def __init__(self, x, y, lives: int) -> None:
@@ -120,9 +127,10 @@ class Player:
             score = 0
             lastscore = 0
             EndGame = False
-            GameRestart = False
             self.__init__(129, 188, 6)
             self.Map = Map()
+            GameRestart = False
+            
 
 
 
@@ -245,7 +253,8 @@ class Player:
                 
                 
     def damage(self) -> None:
-        if self.dmg and self.cooldown == 0:
+        global MapStart
+        if self.dmg and self.cooldown == 0 and MapStart:
             self.cooldown = 50
             self.dx = 20
             self.lifebar.vidas -= 1

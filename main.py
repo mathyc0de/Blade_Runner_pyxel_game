@@ -37,7 +37,7 @@ class APP:
         self.Map.pressStart()
         self.Map.drawStart(self.player.camerax)
         self.Map.spawnEnemies(self.player.camerax)
-        px.text(13 + self.player.camerax, 20, f'Score: {self.player.score}', 6)
+        px.text(13 + self.player.camerax, 20, f'Score: {self.player.score} ', 6)
         self.player.lifebar.draw()
             
         
