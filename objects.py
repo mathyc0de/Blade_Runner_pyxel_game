@@ -1,7 +1,7 @@
 import pyxel as px
 from sounds import Sons, Music
 from abc import ABC, abstractclassmethod
-import os
+import os, platform
 
 
 #Constantes
@@ -45,9 +45,12 @@ def choice(*elements):
 
 
 def bestplay() -> None:
-    """armazena a melhor jogada em AppData/local/Blade_Runner"""
+    """armazena a melhor jogada em AppData/local/Blade_Runner ou var/lib/Blade_Runner"""
     global scoremax
-    dir = os.path.expanduser('~\\AppData\\Local\\Blade_Runner\\')
+    if platform.system == "Windows":
+        dir = os.path.expanduser('~\\AppData\\Local\\Blade_Runner\\')
+    elif platform.system == "Linux":
+        dir = ("/var/lib/Blade_Runner")
     path = dir+"bestplay.txt"
     IsExist = os.path.exists(dir)
     if not IsExist:
