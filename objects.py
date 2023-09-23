@@ -50,7 +50,7 @@ def bestplay() -> None:
     if platform.system == "Windows":
         dir = os.path.expanduser('~\\AppData\\Local\\Blade_Runner\\')
     elif platform.system == "Linux":
-        dir = ("/var/lib/Blade_Runner")
+        dir = ("\\var\\lib\\Blade_Runner\\")
     path = dir+"bestplay.txt"
     IsExist = os.path.exists(dir)
     if not IsExist:
@@ -751,7 +751,7 @@ class Map:
         self.skel2.draw()
         self.skel3.draw()
         self.skel4.draw()
-    
+        
             
 
         
