@@ -4,7 +4,7 @@ from abc import ABC, abstractclassmethod
 import os
 
 
-
+#Constantes
 objectspos = []
 timer = [[0, 0]]
 bulletpos = [[0, 0, 0, 0, False, False]]
@@ -20,9 +20,12 @@ score = 0
 lastscore = 0
 EndGame = False
 GameRestart = False
+killscore = 0
+show = 0
+scoremake = 0
 
-
-def Multiplier():
+def Multiplier() -> None:
+    """incrementa o multiplicador conforme o tempo após o jogo começar"""
     global counter, multiplier, MapStart
     if MapStart:
         counter += 1
@@ -34,13 +37,15 @@ def Multiplier():
 
 
 def choice(*elements):
+    """randomizador de opções genérico para não precisar importar o random"""
     num = len(elements) - 1
     option = px.rndi(0, num)
     return elements[option]
 
 
 
-def bestplay():
+def bestplay() -> None:
+    """armazena a melhor jogada em AppData/local/Blade_Runner"""
     global scoremax
     dir = os.path.expanduser('~\\AppData\\Local\\Blade_Runner\\')
     path = dir+"bestplay.txt"
@@ -66,7 +71,10 @@ def bestplay():
     
 
 class Player:
-    def __init__(self, x, y, lives: int) -> None:
+    def __init__(self, x: int, y: int, lives: int) -> None:
+        """param x: posicao x do personagem
+           param y: posicao y do personagem
+           param lives: número de vidas do personagem"""
         self.x = x
         self.y = y
         self.dy = 0
@@ -111,6 +119,7 @@ class Player:
 
 
     def restart(self):
+        """restaura o jogo para o estado inicial após o seu restart"""
         global GameRestart, objectspos, timer, bulletpos, multiplier, counter, bulletind, enemy1, enemy2, enemy3, enemy4, enemy5, score, lastscore, EndGame
         if GameRestart:
             objectspos = []
@@ -138,6 +147,7 @@ class Player:
 
 
     def DetectCollisions(self):
+        """Detecta colisões em função da lista de objetos que possuem física"""
         global enemy1, enemy2, enemy3, enemy4, enemy5
         self.x1 = self.x + self.w
         self.y1 = self.y + self.h
@@ -194,32 +204,51 @@ class Player:
 
 
     def hitbox(self):
-            global enemy1, enemy2, enemy3, enemy4, enemy5
+            """Elimina os inimigos se o clique de ataque e atender ao range e aumenta o score ao matar"""
+            global enemy1, enemy2, enemy3, enemy4, enemy5, killscore, show, scoremake            
             if enemy1 and self.attack:
                     self.Map.skel.pop(-300, 400)
                     self.kills += 1
                     self.killcount()
+                    killscore += px.ceil(10 * (multiplier))
+                    scoremake = px.ceil(10 * (multiplier))
+                    show = 5
             if enemy2 and self.attack:
                     self.Map.skel1.pop(-300, 400)
                     self.kills += 1
+                    killscore += px.ceil(10 * (multiplier))
+                    scoremake = px.ceil(10 * (multiplier))
+                    show = 5
             if enemy3 and self.attack:
                     self.Map.skel2.pop(-300, 400)
                     self.kills += 1
                     self.killcount()
+                    killscore += px.ceil(10 * (multiplier))
+                    scoremake = px.ceil(10 * (multiplier))
+                    show = 5
             if enemy4 and self.attack:
                     self.Map.skel3.pop(-300, 400)
                     self.kills += 1
                     self.killcount()
+                    killscore += px.ceil(10 * (multiplier))
+                    scoremake = px.ceil(10 * (multiplier))
+                    show = 5
             if enemy5 and self.attack:
-                self.Map.skel4.pop(-450, 400)
-                self.kills += 1
-                self.killcount()
-                 
+                    self.Map.skel4.pop(-450, 400)
+                    self.kills += 1
+                    self.killcount()
+                    killscore += px.ceil(10 * (multiplier))
+                    scoremake = px.ceil(10 * (multiplier))
+                    show = 5
+            if show > 0:
+                    px.text(13 + self.camerax, 30, f"+{scoremake}", 6)
+                    show -= 0.1
 
 
 
 
     def killcount(self):
+        """conta os inimigos, a cada 10 kills restaura 1hp"""
         if self.kills % 10 == 0:
             if self.lifebar.vidas < 8:
                 self.lifebar.vidas += 1
@@ -232,14 +261,16 @@ class Player:
 
 
     def Score(self):
-        global score
-        self.score =  px.ceil(self.camerax / 10 + (self.camerax/ 10 * multiplier))
+        """Define a pontuação!"""
+        global score, killscore
+        self.score =  px.ceil(self.camerax / 10 + (self.camerax/ 10 * multiplier)) + killscore
         score = self.score
 
         
             
             
     def knockback(self) -> None:
+        """Joga o inimigo para trás ao levar dano"""
         if self.dx > 0:
                  if self.x - 1 > self.camerax:
                     self.x -= 4
@@ -253,6 +284,7 @@ class Player:
                 
                 
     def damage(self) -> None:
+        """Checa se o personagem levou dano, caso sim, diminui a vida ativa o knockback e toca um som de dano."""
         global MapStart
         if self.dmg and self.cooldown == 0 and MapStart:
             self.cooldown = 50
@@ -270,6 +302,7 @@ class Player:
 
             
     def move(self) -> None:
+        """moveset do jogador"""
         global MapStart, EndGame
         self.StartCheck()
         if px.btnp(px.KEY_F) and not EndGame:
@@ -277,9 +310,8 @@ class Player:
         if px.btn(px.KEY_D) and MapStart and self.x1  < self.camerax + 320:
             self.direction = 'right'
             self.idle = False
-            
             self.x += 3
-        if px.btnp(px.KEY_SPACE) and MapStart:
+        if px.btnp(px.KEY_SPACE) or px.btnp(px.KEY_W) and MapStart:
             if not self.air:
                 self.sons.pulo()
                 self.dy = 20
@@ -315,7 +347,8 @@ class Player:
 
 
 
-    def StartCheck(self):
+    def StartCheck(self) -> None:
+        """Inicializa o mapa ao apertar F"""
         global MapStart
         if MapStart:
             self.camerax += 2
@@ -328,7 +361,8 @@ class Player:
 
 
         
-    def jump(self):
+    def jump(self) -> None:
+        """parametriza a gravidade ao jogador pular"""
         if self.air:
             if self.dy > 0:
                 self.y -= 4
@@ -344,7 +378,8 @@ class Player:
 
 
 
-    def time(self):
+    def time(self) -> None:
+        """contador genérico para load de frames"""
         if self.counter == 15:
             self.u = 35
         elif self.counter == 30:
@@ -398,6 +433,7 @@ class Player:
 
 
     def draw(self) -> None:
+        """desenha as posições específicas do personagem"""
         if self.direction == 'right':
                 if self.attack:
                     px.blt(self.x, self.y - 10, 0, self.u2, 128, self.w + self.add, self.h2, 5)
@@ -423,15 +459,14 @@ class Player:
 class Enemies (ABC):
     @abstractclassmethod
     def __init__(self, x, y) -> None:
+        """param x: posição x do inimigo
+           param y: posição y do inimigo"""
         self.x = x
         self.y = y
         self.time = 0
 
-    @abstractclassmethod
-    def draw(self):
-        px.blt()
-
-    def timer(self, num: int, u1, u2, u3, u4, u5):
+    def timer(self, num: int, u1, u2, u3, u4, u5) -> int:
+        """outro contador genérico"""
         u = timer[num][1]
         if timer[num][0] == 10:
             u = u2
@@ -457,7 +492,10 @@ class Enemies (ABC):
 
 
 class Skeleton(Enemies):
-    def __init__(self, x, y, index):
+    def __init__(self, x, y, index) -> None:
+        """"param x: pos x
+            param y: pos y
+            param index: indíce do inimigo na lista de inimigos, usado para identificar"""
         super().__init__(x, y)
         self.w = 50
         self.h = 54
@@ -489,7 +527,8 @@ class Skeleton(Enemies):
 
 
 
-    def draw(self):
+    def draw(self) -> None:
+        """desenha o inimigo"""
         u = super().timer(self.skeltimeindex, 0, 51, 102, 153, 204)
         px.blt(self.x, self.y, 2, u, self.v, -1 * self.w, self.h, 0)
         self.bulletsDraw()
@@ -499,7 +538,8 @@ class Skeleton(Enemies):
 
 
 
-    def bulletsDraw(self):
+    def bulletsDraw(self) -> None:
+        """desenha as espadas lançadas pelos esqueletos"""
         u = super().timer(self.bullettimeindex , 0, 26, 52, 78, 105)
         if not self.bultime == 30:
             self.bulletxf += self.bullet_constant
@@ -514,7 +554,8 @@ class Skeleton(Enemies):
 
 
 
-    def pop(self, x, y):
+    def pop(self, x, y) -> None:
+        """Exclui os inimigos"""
         objectspos.remove([self.x, self.x1, self.y, self.y1, True, False, self.index])
         self.count = 0
         self.__init__(x, y, self.index)
@@ -526,7 +567,9 @@ class Skeleton(Enemies):
 
 
 class LifeBar:
-    def __init__(self, vidas: int):
+    """classe usada para definir o hp do jogador"""
+    def __init__(self, vidas: int) -> None:
+        """param vidas: número de vidas"""
         self.vidas = vidas
         self.vidalos = 0
         self.camerax = 0
@@ -537,7 +580,8 @@ class LifeBar:
 
 
 
-    def randcolor(self):
+    def randcolor(self) -> int:
+        """randomizador de cor"""
         self.colort += 0.25
         if self.colort == 16:
             self.colort = 0
@@ -549,7 +593,8 @@ class LifeBar:
 
 
 
-    def draw(self):
+    def draw(self) -> None:
+        """desenha as vidas e também procede com a morte do jogador e o restart do jogo."""
         global MapStart, score, lastscore, EndGame, GameRestart
         if self.vidas == 0:
             MapStart = False
@@ -576,6 +621,7 @@ class LifeBar:
 
 
 class Map:
+    """classe usada para posicionar os objetos no mapa"""
     def __init__(self) -> None:
         global MapStart
         MapStart = False
@@ -602,7 +648,9 @@ class Map:
 
 
 
-    def enemyrate(self):
+    def enemyrate(self) -> None:
+        """a frequência com que os inimigos aparecem se conecta com o multiplicador
+        que é incrementado conforme o tempo"""
         if multiplier <= 48:
             self.enemyconst = px.ceil(multiplier * 10)
         else:
@@ -613,7 +661,8 @@ class Map:
 
 
 
-    def flame(self):
+    def flame(self) -> None:
+        """anima a fumaça que está sobre a fogueira na tela inicial"""
         self.stage = self.time/2 
         if self.time == 120:
             self.time = 0
@@ -626,7 +675,8 @@ class Map:
 
 
 
-    def gamebackground(self, camerax):
+    def gamebackground(self, camerax) -> None:
+            """desenha o background"""
             self.camerax = camerax
             if self.timer == 0:
                 self.staticx = camerax
@@ -641,7 +691,8 @@ class Map:
 
 
 
-    def pressStart(self):
+    def pressStart(self) -> None:
+        """desenha o startgame"""
         global MapStart
         self.colort += 0.25
         if self.colort == 16:
@@ -656,7 +707,8 @@ class Map:
 
 
             
-    def drawStart(self, cam_x):
+    def drawStart(self, cam_x) -> None:
+        """desenha as plataformas"""
         if MapStart:
             self.platform0.draw(cam_x)
             self.platform1.draw(cam_x)
@@ -668,7 +720,8 @@ class Map:
 
 
 
-    def spawnEnemies(self, cam_x):            
+    def spawnEnemies(self, cam_x) -> None:
+        """Gera os inimigos"""            
         if  cam_x - 50 > self.randn:
             plat0 = choice(6, 86, 166)
             self.randn = px.rndi(cam_x + 320, cam_x + 700 - self.enemyconst)
@@ -707,6 +760,7 @@ class Map:
 
 class Platform:
     def __init__(self, y: int, type: str, Damage: bool=False, Fisica: bool=True) -> None:
+        """Gera plataformas"""
         objectspos.append([0, 0, y, y + 14, Damage, Fisica])
         self.y = y
         self.timer = 0
@@ -732,6 +786,7 @@ class Platform:
 
 
     def draw(self, camerax) -> None:
+        """Desenha as plataformas no mapa e atualiza conforme o parâmetro camerax"""
         if self.timer == 0:
                 self.staticx = camerax
         self.timer += 1

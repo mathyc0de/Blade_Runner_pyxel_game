@@ -34,6 +34,7 @@ class APP:
         px.blt(251, 220, 0, 2, 113, 87, 14, 5)
         self.Map.flame()
         self.player.draw()
+        self.player.hitbox()
         self.Map.pressStart()
         self.Map.drawStart(self.player.camerax)
         self.Map.spawnEnemies(self.player.camerax)
