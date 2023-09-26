@@ -97,11 +97,7 @@ class Player:
         self.x = x
         self.y = y
         self.dy = 0
-        self.w = 29
-        self.h = 32
         self.h2 = 42
-        self.x1 = self.x + self.w
-        self.y1 = self.y + self.h
         self.direction = 'right'
         self.counter = 0
         self.counter0 = 0
@@ -130,17 +126,32 @@ class Player:
         self.p = p
         self.p2 = px.KEY_2
         if self.p == 1:
+                self.w = 29
+                self.h = 32
+                self.img = 0
+                self.v = 0
+                self.v1 = 35
+                self.v2 = 128
                 self.up = px.KEY_W
                 self.left = px.KEY_A
                 self.right = px.KEY_D
                 self.down = px.KEY_S
                 self.p2 = px.KEY_2
         elif self.p == 2:
+                self.w = 20
+                self.add = 16
+                self.h = 29
+                self.img = 2
+                self.v = 0
+                self.v1 = 0
+                self.v2 = 34
                 self.p2 = px.KEY_KP_DECIMAL
                 self.up = px.KEY_UP
                 self.left = px.KEY_LEFT
                 self.right = px.KEY_RIGHT
                 self.down = px.KEY_DOWN
+        self.x1 = self.x + self.w
+        self.y1 = self.y + self.h
     
 
 
@@ -359,73 +370,125 @@ class Player:
 
     def time(self) -> None:
         """contador genérico para load de frames"""
-        if self.counter == 15:
-            self.u = 35
-        elif self.counter == 30:
-            self.u = 64
-        elif self.counter == 45:
-            self.u = 94
-        elif self.counter == 60:
-            self.u = 5
-            self.counter = 0
-        self.counter += 1
+        if self.p == 1:
+            if self.counter == 15:
+                self.u = 35
+            elif self.counter == 30:
+                self.u = 64
+            elif self.counter == 45:
+                self.u = 94
+            elif self.counter == 60:
+                self.u = 5
+                self.counter = 0
+            self.counter += 1
 
 
-        if self.counter0 == 15:
-            self.u1 = 34
-        elif self.counter0 == 30:
-            self.u1 = 65
-        elif self.counter0 == 45:
-            self.u1 == 94
-        elif self.counter0 == 60:
-            self.u1 = 123
-        elif self.counter0 == 75:
-            self.u1 = 154
-        elif self.counter0 == 90:
-            self.u1 = 5
-            self.counter0 = 0
-        self.counter0 += 1
-        
-        
-        if self.counter1 == 6:
-            self.u2 = 34
-        elif self.counter1 == 12:
-            self.u2 = 65
-        elif self.counter1 == 18:
-            self.u2 == 94
-        elif self.counter1 == 24:
-            self.u2 = 123
-            self.add = 19
-        elif self.counter1 == 30:
-            self.add = 0
-            self.u2 = 154
-            self.attack = False
-        elif self.counter1 == 36:
-            self.u2 = 5
-            self.add = 0
-            self.counter1 = 0
-        self.counter1 += 2
+            if self.counter0 == 15:
+                self.u1 = 34
+            elif self.counter0 == 30:
+                self.u1 = 65
+            elif self.counter0 == 45:
+                self.u1 == 94
+            elif self.counter0 == 60:
+                self.u1 = 123
+            elif self.counter0 == 75:
+                self.u1 = 154
+            elif self.counter0 == 90:
+                self.u1 = 5
+                self.counter0 = 0
+            self.counter0 += 1
+            
+            
+            if self.counter1 == 6:
+                self.u2 = 34
+            elif self.counter1 == 12:
+                self.u2 = 65
+            elif self.counter1 == 18:
+                self.u2 == 94
+            elif self.counter1 == 24:
+                self.u2 = 123
+                self.add = 19
+            elif self.counter1 == 30:
+                self.add = 0
+                self.u2 = 154
+                self.attack = False
+            elif self.counter1 == 36:
+                self.u2 = 5
+                self.add = 0
+                self.counter1 = 0
+            self.counter1 += 2
+        else:
+            if self.counter == 15:
+                self.u = 26
+            elif self.counter == 30:
+                self.u = 47
+            elif self.counter == 45:
+                self.u = 68
+            elif self.counter == 60:
+                self.u = 5
+                self.counter = 0
+            self.counter += 1
 
 
+            if self.counter0 == 15:
+                self.u1 = 116
+            elif self.counter0 == 30:
+                self.u1 = 138
+            elif self.counter0 == 45:
+                self.u1 == 162
+            elif self.counter0 == 60:
+                self.u1 = 186
+            elif self.counter0 == 75:
+                self.u1 = 92
+                self.counter0 = 0
+            elif self.counter0 == 90:
+                self.u1 = 92
+                self.counter0 = 0
+            self.counter0 += 1
+            
+            
+            if self.counter1 == 6:
+                self.u2 = 43
+            elif self.counter1 == 12:
+                self.u2 = 79
+            elif self.counter1 == 18:
+                self.u2 == 117
+            elif self.counter1 == 24:
+                self.u2 = 153
+            elif self.counter1 == 30:
+                self.u2 = 192
+                self.attack = False
+            elif self.counter1 == 36:
+                self.u2 = 5
+                self.counter1 = 0
+            self.counter1 += 2
 
 
 
     def draw(self) -> None:
         """desenha as posições específicas do personagem"""
+        if self.p == 2:
+            col = 0
+            p1const = 2
+            p2const = 2
+        else:
+            col = 5
+            p1const = -10
+            p2const = 0
         if self.direction == 'right':
                 if self.attack:
-                    px.blt(self.x, self.y - 10, 0, self.u2, 128, self.w + self.add, self.h2, 5)
+                    px.blt(self.x, self.y + p1const, self.img, self.u2, self.v2, self.w + self.add, self.h2, col)
                 elif self.idle:
-                    px.blt(self.x,self.y,0, self.u,0, self.w, self.h, 5)
+                    px.blt(self.x,self.y,self.img, self.u, self.v, self.w, self.h, col)
                 else:
-                    px.blt(self.x, self.y, 0, self.u1, 35, self.w, self.h, 5)
+                    px.blt(self.x, self.y + p2const, self.img, self.u1, self.v1, self.w, self.h, col)
         if self.direction == 'left':
                 if self.attack:
-                    px.blt(self.x, self.y - 10, 0, self.u2, 128, -1 * self.w - self.add, self.h2, 5)
+                    px.blt(self.x, self.y + p1const, self.img, self.u2, self.v2, -1 * self.w - self.add, self.h2, col)
                 elif self.idle:
-                    px.blt(self.x, self.y, 0, self.u, 0, -1 * self.w,self.h,5)
+                    px.blt(self.x, self.y, self.img, self.u, self.v, -1 * self.w,self.h,col)
                 else:
-                    px.blt(self.x, self.y, 0, self.u1, 35, -1 * self.w, self.h, 5)
+                    px.blt(self.x, self.y + p2const, self.img, self.u1, self.v1, -1 * self.w, self.h, col)
 
 
 
@@ -774,6 +837,6 @@ class Setup:
 
 map = Map()
 player1 = Player(129, 188, 6, 1)
-player2 = Player(180, 188, 6, 2)
+player2 = Player(180, 191, 6, 2)
 config = Setup()
 enemies = []
