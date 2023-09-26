@@ -738,10 +738,8 @@ class Setup:
         if death[0] and death[1]:
             MapStart = False
             EndGame = True
-            print(MapStart, EndGame)
             if px.btnp(px.KEY_F):
                 GameRestart = True
-                print('a')
             lastscore = config.score
             bestplay()
             px.cls(0)
