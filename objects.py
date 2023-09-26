@@ -82,7 +82,7 @@ def restart():
             lastscore = 0
             killscore = 0
             player1.__init__(129, 188, 6, 1)
-            player2.__init__(160, 188, 6, 2)
+            player2.__init__(160, 191, 6, 2)
             GameRestart = False
             death = [False, True]
             map.__init__()
