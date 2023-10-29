@@ -20,3 +20,5 @@ jogadores recuperam hp a cada 10 esqueletos mortos
 
 a dificuldade do jogo aumenta conforme o tempo
 assim como a pontuação também
+
+![image](https://github.com/mathyc0de/Blade_Runner_pyxel_game/assets/135391387/0669b4a7-6e5a-40bf-834c-24697518730d)
